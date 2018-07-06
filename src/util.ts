@@ -1,16 +1,17 @@
-import { Message, Channel, TextChannel, User, StreamDispatcher } from "discord.js";
-import firebase from "firebase";
+import { Message, Channel, TextChannel, User, StreamDispatcher, VoiceChannel } from "discord.js";
+import firebase from "firebase-admin";
 import { Readable } from "stream";
 
-class Util {
+export class Util {
   private static instance: Util;
 
   private message: Message;
   private lockedServers: Channel[];
   private lockedUsers: User[];
   private dispatcher?: StreamDispatcher;
+  private voiceChannel?: VoiceChannel;
 
-  private database?: any; // FIXME: This should be something like "database" from firebase
+  private database?: firebase.database.Database;
 
   constructor(message: Message, firebaseLogin?: Object) {
     this.message = message;
@@ -50,6 +51,10 @@ class Util {
     this.message = message;
   }
 
+  /**
+   * Sends a text message
+   * @param text text message to send to the current message's channel
+   */
   sendToChannel(text: string): void {
     this.message.channel.sendMessage(text);
   }
@@ -76,7 +81,7 @@ class Util {
     return false;
   }
 
-  playStream(stream: Readable) {
+  playStream(stream: Readable): void {
     // Ensures dispatcher resets on new audio
     if (this.dispatcher) {
       this.dispatcher.end();
@@ -119,5 +124,12 @@ class Util {
         .toLowerCase()
         .split(" ")[0] === command.toLowerCase()
     );
+  }
+
+  stopAudio(): void {
+    if (this.dispatcher && this.voiceChannel) {
+      this.dispatcher.end();
+      this.voiceChannel.leave();
+    }
   }
 }
