@@ -3,7 +3,10 @@
   "version": "0.0.1",
   "description": "Discord bot written in Typescript ",
   "main": "build/app.js",
-  "scripts": {},
+  "scripts": {
+    "start": "tsc && node build/app.js",
+    "debug": "tsc && node --inspect build/app.js"
+  },
   "author": "Hayden Hong <afruitpie@gmail.com>",
   "license": "ISC",
   "dependencies": {

@@ -1,20 +1,38 @@
 import { Client, Message } from "discord.js";
 import { Util } from "./util";
-import { PingPong } from "./message-features/PingPong";
+import { handlers as Handlers } from "./message-features";
+
+const loginData = require("../login.json");
 
 let client = new Client();
-let util: Util | undefined = undefined; // FIXME: nullable version of this?
+
+// FIXME: Because of async issues, we probably want a new Util for EVERY channel for the bot.
+let util: Util | undefined = undefined;
 
 client.on("message", (message: Message) => {
+  // Handles initializing Util
   if (!util) {
-    util = Util.getInstance(message);
+    if (loginData.firebase) {
+      util = Util.getInstance(message, loginData.firebase);
+    } else {
+      util = Util.getInstance(message);
+    }
   } else {
-    util.setMessage(message);
+    if (!message.author.bot) {
+      util.setMessage(message);
+    }
   }
-  new PingPong().handleMessage;
 
-  // TODO: Go through all different message handlers
+  // Go through all message handlers
+  if (!message.author.bot) {
+    Handlers.forEach(handlerClass => {
+      let handler = new handlerClass();
+      handler.handleMessage();
+      handler = null; // FIXME: Release for garbage collection necessary?
+    });
+  }
 });
 
-//TODO: Parse login information from a json
-client.login("TOKEN HERE");
+client.login(loginData.token).then(() => {
+  console.log("Successfully logged in");
+});

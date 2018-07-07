@@ -21,7 +21,11 @@ export class Util {
     if (firebaseLogin) {
       firebase.initializeApp(firebaseLogin);
       this.database = firebase.database();
+    } else {
+      console.log("No firebase login detected");
     }
+
+    console.log(`Initialized on first message. Message is: ${message.toString()}`);
   }
 
   /**
@@ -29,12 +33,16 @@ export class Util {
    * @param message message used to initialize this class.
    * @return the singleton instance of this class
    */
-  static getInstance(message?: Message): Util {
+  static getInstance(message?: Message, firebaseLogin?: Object): Util {
     // Create an instance if one does not already exist
     if (!this.instance) {
       // A message is required if it is creating the first instance
       if (message) {
-        this.instance = new Util(message);
+        if (firebaseLogin) {
+          this.instance = new Util(message, firebaseLogin);
+        } else {
+          this.instance = new Util(message);
+        }
       } else {
         throw new Error("No message has been defined to initialize the Util class.");
       }
@@ -49,6 +57,7 @@ export class Util {
 
   setMessage(message: Message): void {
     this.message = message;
+    console.log(`New message set: ${message.toString()}`);
   }
 
   /**
@@ -56,7 +65,7 @@ export class Util {
    * @param text text message to send to the current message's channel
    */
   sendToChannel(text: string): void {
-    this.message.channel.sendMessage(text);
+    this.message.channel.send(text);
   }
 
   /**
