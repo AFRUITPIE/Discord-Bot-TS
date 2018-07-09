@@ -60,6 +60,24 @@ export class Util {
     console.log(`New message set: ${message.toString()}`);
   }
 
+  getMessage(): Message {
+    return this.message;
+  }
+
+  getMessageText(removeCommand?: Boolean): string {
+    if (removeCommand) {
+      let text = this.message.toString().split(" ");
+      text.shift();
+      return text.join(" ");
+    } else {
+      return this.message.toString();
+    }
+  }
+
+  getDatabase(): firebase.database.Database | void {
+    return this.database;
+  }
+
   /**
    * Sends a text message
    * @param text text message to send to the current message's channel
@@ -122,6 +140,28 @@ export class Util {
   }
 
   /**
+   * @returns Whether or not the current message is from an admin user. Defaults to false if no admin role.
+   */
+  isAdmin(): Boolean {
+    let adminRole = this.message.guild.roles.find("name", "Admin");
+
+    // Escapes this in case there is no admin role at all
+    if (adminRole === null) {
+      console.log(
+        `Please set a role in the server named "Admin", some bot functionality won't work without it`
+      );
+      // Warn users why it doesn't work
+      this.sendToChannel(
+        "There is no role in this server dedicated to admins. Please contact the server owner to have one set."
+      );
+      return false;
+    }
+
+    // Finally returns whether the user is an admin
+    return this.message.member.roles.has(adminRole.id);
+  }
+
+  /**
    * Verifies commands from messages
    * @param command command to check against
    * @returns true if the command is the start of the message's text
@@ -131,7 +171,8 @@ export class Util {
       this.message
         .toString()
         .toLowerCase()
-        .split(" ")[0] === command.toLowerCase()
+        .split(" ")[0] ===
+      ";;" + command.toLowerCase()
     );
   }
 

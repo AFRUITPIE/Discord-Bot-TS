@@ -2,7 +2,7 @@ import { Client, Message } from "discord.js";
 import { Util } from "./util";
 import { handlers as Handlers } from "./message-features";
 
-const loginData = require("../login.json");
+export const loginData = require("../login.json");
 
 let client = new Client();
 
