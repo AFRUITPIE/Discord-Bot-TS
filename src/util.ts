@@ -66,7 +66,10 @@ export class Util {
 
   getMessageText(removeCommand?: Boolean): string {
     if (removeCommand) {
-      let text = this.message.toString().split(" ");
+      let text = this.message
+        .toString()
+        .trim()
+        .split(" ");
       text.shift();
       return text.join(" ");
     } else {
@@ -95,17 +98,12 @@ export class Util {
     return this.message.toString().toLowerCase() === text.toLowerCase();
   }
 
-  messageContainsWord(word: String): Boolean {
-    word = word.toLowerCase();
-    for (let substring in this.message
+  messageContains(phrase: string): Boolean {
+    phrase = phrase.trim().toLowerCase();
+    return this.message
       .toString()
       .toLowerCase()
-      .split(" ")) {
-      if (substring === word) {
-        return true;
-      }
-    }
-    return false;
+      .includes(phrase);
   }
 
   playStream(stream: Readable): void {
@@ -116,12 +114,14 @@ export class Util {
 
     // Join if possible and leave when stream is over
     if (this.message.member.voiceChannel && this.shouldInteract()) {
-      let voiceChannel = this.message.member.voiceChannel;
-      voiceChannel.join().then(connection => {
+      this.voiceChannel = this.message.member.voiceChannel;
+      this.voiceChannel.join().then(connection => {
         this.dispatcher = connection.playStream(stream);
         // Disconnects from the voice channel on video end
         this.dispatcher.on("end", end => {
-          voiceChannel.leave();
+          if (this.voiceChannel) {
+            this.voiceChannel.leave();
+          }
         });
       });
     }
