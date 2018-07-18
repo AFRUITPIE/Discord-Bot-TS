@@ -11,19 +11,13 @@ export class Util {
   private dispatcher?: StreamDispatcher;
   private voiceChannel?: VoiceChannel;
 
-  private database?: firebase.database.Database;
+  private firebaseApp?: firebase.app.App;
 
-  constructor(message: Message, firebaseLogin?: Object) {
+  constructor(message: Message, firebaseApp?: firebase.app.App) {
     this.message = message;
+    this.firebaseApp = firebaseApp;
     this.lockedServers = [];
     this.lockedUsers = [];
-
-    if (firebaseLogin) {
-      firebase.initializeApp(firebaseLogin);
-      this.database = firebase.database();
-    } else {
-      console.log("No firebase login detected");
-    }
 
     console.log(`Initialized on first message. Message is: ${message.toString()}`);
   }
@@ -33,16 +27,12 @@ export class Util {
    * @param message message used to initialize this class.
    * @return the singleton instance of this class
    */
-  static getInstance(message?: Message, firebaseLogin?: Object): Util {
+  static getInstance(message?: Message, firebase?: firebase.app.App): Util {
     // Create an instance if one does not already exist
     if (!this.instance) {
       // A message is required if it is creating the first instance
       if (message) {
-        if (firebaseLogin) {
-          this.instance = new Util(message, firebaseLogin);
-        } else {
-          this.instance = new Util(message);
-        }
+        this.instance = new Util(message, firebase);
       } else {
         throw new Error("No message has been defined to initialize the Util class.");
       }
@@ -77,8 +67,8 @@ export class Util {
     }
   }
 
-  getDatabase(): firebase.database.Database | void {
-    return this.database;
+  getFirebaseApp(): firebase.app.App | void {
+    return this.firebaseApp;
   }
 
   /**

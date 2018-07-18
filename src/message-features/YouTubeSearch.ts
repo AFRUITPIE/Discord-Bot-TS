@@ -4,7 +4,7 @@ import { BaseHandler } from "./BaseHandler";
 import { Commands } from "./Commands";
 import * as app from "../app";
 
-const AsciiTable = require("ascii-table");
+const AsciiTable = require("ascii-table"); //FIXME: Convert this into an import because it looks like garbage
 
 enum Keywords {
   failedSearch = "Something went wrong with the search :(",
@@ -36,7 +36,7 @@ export class YouTubeSearch extends BaseHandler {
   private handleYouTubeSearch(): void {
     yt.default(this.util.getMessageText(true), this.searchOptions, (err, result) => {
       let newResultMessage = new AsciiTable(
-        `YoutTube search results: ${this.util.getMessageText(true)}`
+        `YouTube search results: ${this.util.getMessageText(true).substring(0, 30)}`
       );
       newResultMessage.setHeading("Index", "Video Title");
 
@@ -46,7 +46,7 @@ export class YouTubeSearch extends BaseHandler {
 
         // Build a message to send
         result.forEach((video, index) => {
-          newResultMessage.addRow(index + 1, video.title);
+          newResultMessage.addRow(index + 1, video.title.substring(0, 30));
         });
 
         this.util.sendToChannel("```" + newResultMessage.toString() + "```");
