@@ -3,16 +3,22 @@ import { Util } from "./util";
 import { handlers as Handlers } from "./message-features";
 import firebase from "firebase-admin";
 
+// Login data for Firebase, Youtube, Discord, etc.
+// See README for extra information on how to handle this
+// FIXME: Possible to use an import rather than a require statement?
 export const loginData = require("../login.json");
-const client = new Client();
 
+// Handles initializing the firebase application
 let firebaseApp: firebase.app.App;
-
 if (loginData) {
   if (loginData.firebaseURL && loginData.firebaseToken) {
     try {
-      firebaseApp = firebase.initializeApp(loginData.firebase, loginData.firebaseURL);
-      console.log("Successfully initialized Firebase application");
+      firebaseApp = firebase.initializeApp({
+        credential: firebase.credential.cert(loginData.firebaseToken),
+        databaseURL: loginData.firebaseDatabaseURL
+      });
+      // FIXME: This console log never happens for some reason
+      console.log("Firebase app initialized");
     } catch (err) {
       console.error(err);
     }
@@ -21,9 +27,13 @@ if (loginData) {
   console.log("No firebase login detected");
 }
 
+// client for the Bot itself
+const client = new Client();
+
 // FIXME: Because of async issues, we probably want a new Util for EVERY channel for the bot.
 let util: Util | undefined = undefined;
 
+// Goes through every message handler to see if it can interact with any of them
 client.on("message", (message: Message) => {
   // Handles initializing Util
   if (!util) {
