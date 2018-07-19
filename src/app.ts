@@ -11,13 +11,12 @@ export const loginData = require("../login.json");
 // Handles initializing the firebase application
 let firebaseApp: firebase.app.App;
 if (loginData) {
-  if (loginData.firebaseURL && loginData.firebaseToken) {
+  if (loginData.firebaseDatabaseURL && loginData.firebaseToken) {
     try {
-      firebaseApp = firebase.initializeApp({
+      firebase.initializeApp({
         credential: firebase.credential.cert(loginData.firebaseToken),
         databaseURL: loginData.firebaseDatabaseURL
       });
-      // FIXME: This console log never happens for some reason
       console.log("Firebase app initialized");
     } catch (err) {
       console.error(err);
@@ -37,7 +36,7 @@ let util: Util | undefined = undefined;
 client.on("message", (message: Message) => {
   // Handles initializing Util
   if (!util) {
-    Util.getInstance(message, firebaseApp);
+    Util.getInstance(message);
   } else {
     if (!message.author.bot) {
       util.setMessage(message);

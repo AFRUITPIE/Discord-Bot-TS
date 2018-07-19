@@ -11,11 +11,8 @@ export class Util {
   private dispatcher?: StreamDispatcher;
   private voiceChannel?: VoiceChannel;
 
-  private firebaseApp?: firebase.app.App;
-
-  constructor(message: Message, firebaseApp?: firebase.app.App) {
+  constructor(message: Message) {
     this.message = message;
-    this.firebaseApp = firebaseApp;
     this.lockedServers = [];
     this.lockedUsers = [];
 
@@ -27,12 +24,12 @@ export class Util {
    * @param message message used to initialize this class.
    * @return the singleton instance of this class
    */
-  static getInstance(message?: Message, firebase?: firebase.app.App): Util {
+  static getInstance(message?: Message): Util {
     // Create an instance if one does not already exist
     if (!this.instance) {
       // A message is required if it is creating the first instance
       if (message) {
-        this.instance = new Util(message, firebase);
+        this.instance = new Util(message);
       } else {
         throw new Error("No message has been defined to initialize the Util class.");
       }
@@ -45,15 +42,26 @@ export class Util {
     return this.instance;
   }
 
+  /**
+   * Overrides the current message that this class handles
+   * @param message message to override current message with
+   */
   setMessage(message: Message): void {
     this.message = message;
     console.log(`New message set: ${message.toString()}`);
   }
 
+  /**
+   * @returns current message
+   */
   getMessage(): Message {
     return this.message;
   }
 
+  /**
+   * @param removeCommand whether or not to remove the command from the message
+   * @returns the string value of the message
+   */
   getMessageText(removeCommand?: Boolean): string {
     if (removeCommand) {
       let text = this.message
@@ -67,10 +75,6 @@ export class Util {
     }
   }
 
-  getFirebaseApp(): firebase.app.App | void {
-    return this.firebaseApp;
-  }
-
   /**
    * Sends a text message
    * @param text text message to send to the current message's channel
@@ -80,7 +84,6 @@ export class Util {
   }
 
   /**
-   *
    * @param text string to check the message against
    * @returns whether the message is a match
    */
@@ -88,6 +91,10 @@ export class Util {
     return this.message.toString().toLowerCase() === text.toLowerCase();
   }
 
+  /**
+   *
+   * @param phrase phrase to check for within the message
+   */
   messageContains(phrase: string): Boolean {
     phrase = phrase.trim().toLowerCase();
     return this.message
@@ -96,6 +103,10 @@ export class Util {
       .includes(phrase);
   }
 
+  /**
+   * Play a stream in the voice channel of the current message's author
+   * @param stream Stream to be played within the voice channel
+   */
   playStream(stream: Readable): void {
     // Ensures dispatcher resets on new audio
     if (this.dispatcher) {
@@ -166,6 +177,9 @@ export class Util {
     );
   }
 
+  /**
+   * Stops playing audio in voice channels
+   */
   stopAudio(): void {
     if (this.dispatcher && this.voiceChannel) {
       this.dispatcher.end();
