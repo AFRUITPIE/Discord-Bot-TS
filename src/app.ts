@@ -9,7 +9,6 @@ import firebase from "firebase-admin";
 export const loginData = require("../login.json");
 
 // Handles initializing the firebase application
-let firebaseApp: firebase.app.App;
 if (loginData) {
   if (loginData.firebaseDatabaseURL && loginData.firebaseToken) {
     try {

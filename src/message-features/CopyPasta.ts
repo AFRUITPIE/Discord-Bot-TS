@@ -32,8 +32,10 @@ export class CopyPasta extends BaseHandler {
 
   handleMessage(): void {
     if (!isUndefined(CopyPasta.copyPastas) && !isNull(CopyPasta.copyPastas)) {
+      let asdf = CopyPasta.copyPastas;
+
       // Checks message against every trigger word in the database
-      for (let triggerWord of Object.keys(CopyPasta.copyPastas)) {
+      for (let triggerWord of Object.keys(asdf)) {
         // Sends the copypasta response if the trigger word is found
         if (this.util.messageContains(triggerWord)) {
           let copyPastaResponse: string = CopyPasta.copyPastas[triggerWord];

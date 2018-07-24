@@ -47,8 +47,11 @@ export class Util {
    * @param message message to override current message with
    */
   setMessage(message: Message): void {
-    this.message = message;
-    console.log(`New message set: ${message.toString()}`);
+    // Ensures bot messages are not set
+    if (!message.author.bot) {
+      this.message = message;
+      console.log(`New message set: ${message.toString()}`);
+    }
   }
 
   /**
@@ -80,7 +83,13 @@ export class Util {
    * @param text text message to send to the current message's channel
    */
   sendToChannel(text: string): void {
-    this.message.channel.send(text);
+    // Ensures 2000 character limit is safe
+    let splitMessage = text.match(/.{1,2000}/g);
+    if (splitMessage) {
+      splitMessage.forEach(segment => {
+        this.message.channel.send(segment);
+      });
+    }
   }
 
   /**
@@ -92,15 +101,42 @@ export class Util {
   }
 
   /**
-   *
    * @param phrase phrase to check for within the message
+   * @returns whether or not the message contains that phrase
    */
   messageContains(phrase: string): Boolean {
-    phrase = phrase.trim().toLowerCase();
-    return this.message
+    let phraseWordCount = phrase.split(" ").length;
+    let phraseArray = phrase
       .toString()
       .toLowerCase()
-      .includes(phrase);
+      .split(" ");
+    let messageArray = this.message
+      .toString()
+      .toLowerCase()
+      .split(" ");
+
+    // Checks for the phrase by word
+    // FIXME: This is in O(n^2) which is... bad
+    for (let i = 0; i < phraseWordCount; i++) {
+      // Get a slice of the message with same # of words
+      let messageSlice = messageArray.slice(i, i + phraseWordCount);
+      let messagesAreEqual = true;
+
+      // Check if slice of message and phrase are the same or different
+      for (let j = 0; j < messageSlice.length; j++) {
+        if (messageSlice[j] !== phraseArray[j]) {
+          messagesAreEqual = false;
+        }
+      }
+
+      // Return true if phrase is found
+      if (messagesAreEqual) {
+        return true;
+      }
+    }
+
+    // Return false if it is never found
+    return false;
   }
 
   /**
