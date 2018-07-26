@@ -6,6 +6,7 @@ import { YouTubeSearch } from "./YouTubeSearch";
 import { StopAudio } from "./StopAudio";
 import { PlayLink } from "./PlayLink";
 import { CopyPasta } from "./CopyPasta";
+import { YouTubePasta } from "./YouTubePasta";
 
 export const handlers: Array<any> = [
   PingPong,
@@ -13,5 +14,6 @@ export const handlers: Array<any> = [
   YouTubeSearch,
   StopAudio,
   PlayLink,
-  CopyPasta
+  CopyPasta,
+  YouTubePasta
 ]; // FIXME: any? really?

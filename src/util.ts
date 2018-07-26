@@ -1,5 +1,4 @@
-import { Message, Channel, TextChannel, User, StreamDispatcher, VoiceChannel } from "discord.js";
-import firebase from "firebase-admin";
+import { Message, Channel, User, StreamDispatcher, VoiceChannel } from "discord.js";
 import { Readable } from "stream";
 
 export class Util {
@@ -105,38 +104,51 @@ export class Util {
    * @returns whether or not the message contains that phrase
    */
   messageContains(phrase: string): Boolean {
-    let phraseWordCount = phrase.split(" ").length;
     let phraseArray = phrase
       .toString()
+      .trim()
       .toLowerCase()
       .split(" ");
     let messageArray = this.message
       .toString()
+      .trim()
       .toLowerCase()
       .split(" ");
 
+    // If phrase is too big to fit in message, just return false
+    if (phraseArray.length > messageArray.length) {
+      return false;
+    }
+
     // Checks for the phrase by word
     // FIXME: This is in O(n^2) which is... bad
-    for (let i = 0; i < phraseWordCount; i++) {
+    let messagesAreEqual = true;
+    for (let i = 0; i < phraseArray.length; i++) {
       // Get a slice of the message with same # of words
-      let messageSlice = messageArray.slice(i, i + phraseWordCount);
-      let messagesAreEqual = true;
-
-      // Check if slice of message and phrase are the same or different
-      for (let j = 0; j < messageSlice.length; j++) {
-        if (messageSlice[j] !== phraseArray[j]) {
-          messagesAreEqual = false;
-        }
-      }
-
-      // Return true if phrase is found
-      if (messagesAreEqual) {
+      let messageSlice = messageArray.slice(i, i + phraseArray.length);
+      // returns true if the internal part is the same
+      if (this.arraysAreEqual(messageSlice, phraseArray)) {
         return true;
       }
     }
 
     // Return false if it is never found
     return false;
+  }
+
+  /**
+   * @param a array 1
+   * @param b array 2
+   * @returns whether they are equal
+   */
+  private arraysAreEqual(a: string[], b: string[]): Boolean {
+    if (a === b) return true;
+    if (a == null || b == null) return false;
+    if (a.length != b.length) return false;
+    for (var i = 0; i < a.length; ++i) {
+      if (a[i] !== b[i]) return false;
+    }
+    return true;
   }
 
   /**
