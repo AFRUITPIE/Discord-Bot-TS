@@ -11,9 +11,15 @@
   "license": "ISC",
   "dependencies": {
     "@types/node": "^10.5.0",
+    "@types/readline-sync": "^1.4.3",
+    "ascii-table": "0.0.9",
     "discord.js": "^11.3.2",
-    "ffmpeg-binaries": "^3.2.2-3",
     "firebase-admin": "^5.12.1",
-    "ytdl-core": "^0.20.4"
+    "node-opus": "^0.3.0",
+    "readline-sync": "^1.4.9",
+    "sodium": "^2.0.3",
+    "uws": "^10.148.1",
+    "youtube-search": "^1.1.1",
+    "ytdl-core": "^0.21.1"
   }
 }
