@@ -50,7 +50,6 @@ export class Util {
     // Ensures bot messages are not set
     if (!message.author.bot) {
       this.message = message;
-      console.log(`New message set: ${message.toString()}`);
     }
   }
 
@@ -74,7 +73,7 @@ export class Util {
       text.shift();
       return text.join(" ");
     } else {
-      return this.message.toString();
+      return this.message.toString().trim();
     }
   }
 
