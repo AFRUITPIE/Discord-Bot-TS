@@ -5,14 +5,15 @@ export class Util {
   private static instance: Util;
 
   private message: Message;
-  private lockedServers: Channel[];
+  private lockedChannels: Channel[];
   private lockedUsers: User[];
   private dispatcher?: StreamDispatcher;
   private voiceChannel?: VoiceChannel;
 
   constructor(message: Message) {
     this.message = message;
-    this.lockedServers = [];
+
+    this.lockedChannels = [];
     this.lockedUsers = [];
 
     console.log(`Initialized on first message. Message is: ${message.toString()}`);
@@ -78,13 +79,16 @@ export class Util {
   }
 
   /**
-   * Sends a text message
+   * Sends a text message safely
    * @param text text message to send to the current message's channel
+   * @param ignoreLock ignores the locked status of a channel when sending
    */
-  sendToChannel(text: string): void {
+  sendToChannel(text: string, ignoreLock?: boolean): void {
     // Ensures 2000 character limit is safe
     let splitMessage = text.match(/.{1,2000}/g);
-    if (splitMessage) {
+
+    // Only send message if it makes sense to
+    if (splitMessage && (this.shouldInteract() || ignoreLock)) {
       splitMessage.forEach(segment => {
         this.message.channel.send(segment);
       });
@@ -122,7 +126,6 @@ export class Util {
 
     // Checks for the phrase by word
     // FIXME: This is in O(n^2) which is... bad
-    let messagesAreEqual = true;
     for (let i = 0; i < phraseArray.length; i++) {
       // Get a slice of the message with same # of words
       let messageSlice = messageArray.slice(i, i + phraseArray.length);
@@ -134,21 +137,6 @@ export class Util {
 
     // Return false if it is never found
     return false;
-  }
-
-  /**
-   * @param a array 1
-   * @param b array 2
-   * @returns whether they are equal
-   */
-  private arraysAreEqual(a: string[], b: string[]): Boolean {
-    if (a === b) return true;
-    if (a == null || b == null) return false;
-    if (a.length != b.length) return false;
-    for (var i = 0; i < a.length; ++i) {
-      if (a[i] !== b[i]) return false;
-    }
-    return true;
   }
 
   /**
@@ -184,7 +172,29 @@ export class Util {
   shouldInteract(): Boolean {
     return (
       !this.lockedUsers.includes(this.message.author) &&
-      !this.lockedServers.includes(this.message.channel)
+      !this.lockedChannels.includes(this.message.channel)
+    );
+  }
+
+  /**
+   * Toggles the locked status of the current message's channel
+   */
+  toggleChannelLock() {
+    // Removes channel if included, leaves it otherwise
+    const channelIsLocked = this.lockedChannels.includes(this.message.channel);
+    if (channelIsLocked) {
+      let indexOfChannel = this.lockedChannels.indexOf(this.message.channel);
+      this.lockedChannels.splice(indexOfChannel, 1);
+      console.log(`Unlocking channel ${this.message.channel.id}`);
+    } else {
+      this.lockedChannels.push(this.message.channel);
+      console.log(`Locking channel ${this.message.channel.id}`);
+    }
+
+    // Notify users of the new channel lock status
+    this.sendToChannel(
+      `This channel has been ${channelIsLocked ? "`unlocked`" : "`locked`"}`,
+      true
     );
   }
 
@@ -233,5 +243,20 @@ export class Util {
       this.dispatcher.end();
       this.voiceChannel.leave();
     }
+  }
+
+  /**
+   * @param a array 1
+   * @param b array 2
+   * @returns whether they are equal
+   */
+  private arraysAreEqual(a: string[], b: string[]): Boolean {
+    if (a === b) return true;
+    if (a == null || b == null) return false;
+    if (a.length != b.length) return false;
+    for (var i = 0; i < a.length; ++i) {
+      if (a[i] !== b[i]) return false;
+    }
+    return true;
   }
 }

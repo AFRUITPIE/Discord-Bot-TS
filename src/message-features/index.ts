@@ -7,6 +7,7 @@ import { StopAudio } from "./StopAudio";
 import { PlayLink } from "./PlayLink";
 import { CopyPasta } from "./CopyPasta";
 import { YouTubePasta } from "./YouTubePasta";
+import { LockChannel } from "./LockChannel";
 
 export const handlers: Array<any> = [
   PingPong,
@@ -15,5 +16,6 @@ export const handlers: Array<any> = [
   StopAudio,
   PlayLink,
   CopyPasta,
-  YouTubePasta
+  YouTubePasta,
+  LockChannel
 ]; // FIXME: any? really?
