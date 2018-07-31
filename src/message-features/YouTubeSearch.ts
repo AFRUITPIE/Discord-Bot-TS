@@ -34,9 +34,12 @@ export class YouTubeSearch extends BaseHandler {
   }
 
   private handleYouTubeSearch(): void {
-    yt.default(this.util.getMessageText(true), this.searchOptions, (err, result) => {
+    const messageText = this.util.getMessageText(true);
+    yt.default(messageText, this.searchOptions, (err, result) => {
       let newResultMessage = new AsciiTable(
-        `YouTube search results: ${this.util.getMessageText(true).substring(0, 30)}`
+        `YouTube search results: ${messageText.substring(0, 10)}${
+          messageText.length > 10 ? "..." : ""
+        }`
       );
       newResultMessage.setHeading("Index", "Video Title");
 
@@ -49,7 +52,8 @@ export class YouTubeSearch extends BaseHandler {
           newResultMessage.addRow(index + 1, video.title.substring(0, 30));
         });
 
-        this.util.sendToChannel("```" + newResultMessage.toString() + "```");
+        // Sending through getMessage in order to handle weird whitespace issues with asciitable
+        this.util.getMessage().channel.send("```" + newResultMessage.toString() + "```");
       } else if (err) {
         console.error(err);
         this.util.sendToChannel(Keywords.failedSearch);
