@@ -1,5 +1,10 @@
-import { Util } from "../util";
-export abstract class BaseHandler {
-  util: Util = Util.getInstance();
-  abstract handleMessage(): void;
+import { ChannelUtil } from "../ChannelUtil";
+import { MessageUtil } from "../MessageUtil";
+export abstract class BaseHandler implements MessageHandler {
+  util: ChannelUtil = ChannelUtil.getInstance();
+  abstract handleMessage(message: MessageUtil): void;
+}
+
+export interface MessageHandler {
+  handleMessage(message: MessageUtil): void;
 }

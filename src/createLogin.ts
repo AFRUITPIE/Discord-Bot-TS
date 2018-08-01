@@ -1,8 +1,6 @@
-import { ReadLine, createInterface } from "readline";
 import readlineSync from "readline-sync";
 import firebase from "firebase-admin";
 import fs from "fs";
-import { loginData } from "./app";
 
 export interface LoginData {
   token: string;

@@ -1,21 +1,21 @@
-import { BaseHandler } from "./BaseHandler";
-
-import { PingPong } from "./PingPong";
 import { BotSay } from "./BotSay";
-import { YouTubeSearch } from "./YouTubeSearch";
-import { StopAudio } from "./StopAudio";
-import { PlayLink } from "./PlayLink";
 import { CopyPasta } from "./CopyPasta";
-import { YouTubePasta } from "./YouTubePasta";
 import { LockChannel } from "./LockChannel";
+import { PingPong } from "./PingPong";
+import { PlayLink } from "./PlayLink";
+import { SentimentAnalysis } from "./SentimentAnalysis";
+import { StopAudio } from "./StopAudio";
+import { YouTubePasta } from "./YouTubePasta";
+import { YouTubeSearch } from "./YouTubeSearch";
 
-export const handlers: Array<any> = [
-  PingPong,
+export = [
   BotSay,
-  YouTubeSearch,
-  StopAudio,
-  PlayLink,
   CopyPasta,
+  LockChannel,
+  PingPong,
+  PlayLink,
+  SentimentAnalysis,
+  StopAudio,
   YouTubePasta,
-  LockChannel
-]; // FIXME: any? really?
+  YouTubeSearch
+];

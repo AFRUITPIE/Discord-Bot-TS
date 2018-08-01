@@ -1,8 +1,9 @@
 import * as yt from "youtube-search";
 import ytdl from "ytdl-core";
-import { BaseHandler } from "./BaseHandler";
+import { BaseHandler, MessageHandler } from "./BaseHandler";
 import { Commands } from "./Commands";
-import * as app from "../app";
+import { loginData } from "../app";
+import { MessageUtil } from "../MessageUtil";
 
 const AsciiTable = require("ascii-table"); //FIXME: Convert this into an import because it looks like garbage
 
@@ -11,81 +12,73 @@ enum Keywords {
   searchHeader = "**Respond with the number of the video you want to play:**\n```"
 }
 
-export class YouTubeSearch extends BaseHandler {
-  private static storedResults?: yt.YouTubeSearchResults[];
+export class YouTubeSearch extends BaseHandler implements MessageHandler {
+  private storedResults?: yt.YouTubeSearchResults[];
   private searchOptions: yt.YouTubeSearchOptions = {
     maxResults: 10,
-    key: app.loginData.youtube,
+    key: loginData.youtube,
     type: "video"
   };
 
-  handleMessage(): void {
-    if (app.loginData) {
-      if (this.util.commandIs(Commands.YouTubeSearch)) {
-        console.log(`Searching YouTube for ${this.util.getMessageText(true)}`);
+  handleMessage(message: MessageUtil): void {
+    if (loginData && message.commandIs(Commands.YouTubeSearch)) {
+      console.log(`Searching YouTube for ${message.toString(true)}`);
 
-        if (this.util.getMessageText(true) === "") {
-          this.util.sendToChannel(`No search query given, sending top videos instead.\n`);
-        }
-        this.handleYouTubeSearch();
+      if (message.toString(true) === "") {
+        message.sendToChannel(`No search query given, sending top videos instead.\n`);
       }
-      this.handleVideoSelection();
+      this.handleYouTubeSearch(message);
     }
+    this.handleVideoSelection(message);
   }
 
-  private handleYouTubeSearch(): void {
-    const messageText = this.util.getMessageText(true);
-    yt.default(messageText, this.searchOptions, (err, result) => {
+  private handleYouTubeSearch(message: MessageUtil): void {
+    const query = message.toString(true);
+    yt.default(query, this.searchOptions, (err, result) => {
       let newResultMessage = new AsciiTable(
-        `YouTube search results: ${messageText.substring(0, 10)}${
-          messageText.length > 10 ? "..." : ""
-        }`
+        `YouTube search results: ${query.substring(0, 10)}${query.length > 10 ? "..." : ""}`
       );
       newResultMessage.setHeading("Index", "Video Title");
 
       if (result) {
         // Overwrite results
-        YouTubeSearch.storedResults = result;
+        this.storedResults = result;
 
         // Build a message to send
         result.forEach((video, index) => {
           newResultMessage.addRow(index + 1, video.title.substring(0, 30));
         });
 
-        // Sending through getMessage in order to handle weird whitespace issues with asciitable
-        this.util.getMessage().channel.send("```" + newResultMessage.toString() + "```");
+        // Sending a weird way in order to handle weird whitespace issues with asciitable
+        message.channel.send("```" + newResultMessage.toString() + "```");
       } else if (err) {
         console.error(err);
-        this.util.sendToChannel(Keywords.failedSearch);
+        message.sendToChannel(Keywords.failedSearch);
       }
     });
   }
 
-  private handleVideoSelection(): void {
-    if (YouTubeSearch.storedResults) {
-      let vidNumber = parseInt(this.util.getMessage().toString()) - 1;
+  private handleVideoSelection(message: MessageUtil): void {
+    if (this.storedResults) {
+      let vidNumber = parseInt(message.toString()) - 1;
 
       if (!isNaN(vidNumber)) {
-        if (vidNumber + 1 <= YouTubeSearch.storedResults.length && vidNumber >= 0) {
-          let link = YouTubeSearch.storedResults[vidNumber].link;
+        if (vidNumber + 1 <= this.storedResults.length && vidNumber >= 0) {
+          let link = this.storedResults[vidNumber].link;
           console.log(
             `Playing YouTube video #${vidNumber + 1}: ${
-              YouTubeSearch.storedResults[vidNumber].title
+              this.storedResults[vidNumber].title
             }: ${link}`
           );
 
           // Play the video
           let stream = ytdl(link, { filter: "audioonly" });
           this.util.playStream(stream);
-          this.util.getMessage().delete();
-          this.util.sendToChannel(
-            `Playing ${YouTubeSearch.storedResults[vidNumber].title}: ${link}`
-          );
+          message.delete();
+          message.sendToChannel(`Playing ${this.storedResults[vidNumber].title}: ${link}`);
         } else {
-          this.util.sendToChannel(
-            `\`${vidNumber + 1}\` is not within 1 and ${
-              YouTubeSearch.storedResults.length
-            }, genius.`
+          message.sendToChannel(
+            `\`${vidNumber + 1}\` is not within 1 and ${this.storedResults.length}, genius.`
           );
         }
       } else {
