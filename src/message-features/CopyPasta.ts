@@ -1,7 +1,7 @@
 import { BaseHandler, MessageHandler } from "./BaseHandler";
 import firebase from "firebase-admin";
 import { isUndefined, isNull } from "util";
-import { MessageUtil } from "../MessageUtil";
+import { Message } from "discord.js";
 
 const refName: string = "copyPastas";
 export class CopyPasta extends BaseHandler implements MessageHandler {
@@ -31,7 +31,7 @@ export class CopyPasta extends BaseHandler implements MessageHandler {
     this.copyPastas = snapshot!.val();
   }
 
-  handleMessage(message: MessageUtil): void {
+  handleMessage(message: Message): void {
     if (!isUndefined(this.copyPastas) && !isNull(this.copyPastas)) {
       let asdf = this.copyPastas;
 

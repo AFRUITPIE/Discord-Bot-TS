@@ -1,11 +1,10 @@
 import { Channel, User, StreamDispatcher, VoiceChannel, Message } from "discord.js";
 import { Readable } from "stream";
-import { MessageUtil } from "./MessageUtil";
 
 export class ChannelUtil {
   private static instance: ChannelUtil;
 
-  private message!: MessageUtil;
+  private message!: Message;
   private lockedChannels: Channel[] = [];
   private lockedUsers: User[] = [];
   private dispatcher?: StreamDispatcher;
@@ -15,7 +14,7 @@ export class ChannelUtil {
    * Maintains the singleton pattern of this instance
    * @return the singleton instance of this class
    */
-  static getInstance(message?: MessageUtil): ChannelUtil {
+  static getInstance(message?: Message): ChannelUtil {
     // Create an instance if one does not already exist
     if (!this.instance) {
       this.instance = new ChannelUtil();
@@ -27,7 +26,7 @@ export class ChannelUtil {
    * Overrides the message for easier access to channels
    * @param message message to handle
    */
-  setMessage(message: MessageUtil) {
+  setMessage(message: Message) {
     this.message = message;
   }
 

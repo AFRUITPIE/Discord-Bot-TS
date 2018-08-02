@@ -1,10 +1,10 @@
-import { Client } from "discord.js";
-import { ChannelUtil } from "./ChannelUtil";
+import { Message, Client } from "discord.js";
+import { ChannelUtil } from "./declarations/ChannelUtil";
 import firebase from "firebase-admin";
 import { CreateLogin, LoginData } from "./createLogin";
 import { MessageHandler } from "./message-features/BaseHandler";
-import { MessageUtil } from "./MessageUtil";
 import Handlers from "./message-features";
+import "./declarations/MessageDeclaration";
 
 // Login data for Firebase, Youtube, Discord, etc.
 // See README for extra information on how to handle this
@@ -49,7 +49,9 @@ const client = new Client();
 let util: ChannelUtil | undefined = undefined;
 
 // Goes through every message handler to see if it can interact with any of them
-client.on("message", (message: MessageUtil) => {
+client.on("message", (message: Message) => {
+  // const messageUtil = new MessageUtil(message);
+
   // Handles initializing Util
   if (!util) {
     ChannelUtil.getInstance(message);

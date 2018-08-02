@@ -14,7 +14,6 @@ export = [
   LockChannel,
   PingPong,
   PlayLink,
-  SentimentAnalysis,
   StopAudio,
   YouTubePasta,
   YouTubeSearch

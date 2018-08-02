@@ -1,10 +1,10 @@
 import { BaseHandler, MessageHandler } from "./BaseHandler";
 import { Commands } from "./Commands";
+import { Message } from "discord.js";
 import ytdl from "ytdl-core";
-import { MessageUtil } from "../MessageUtil";
 
 export class PlayLink extends BaseHandler implements MessageHandler {
-  handleMessage(message: MessageUtil): void {
+  handleMessage(message: Message): void {
     if (message.commandIs(Commands.Play)) {
       const youTubeLink = message.toString(true).split(" ")[0];
       const beginTime =

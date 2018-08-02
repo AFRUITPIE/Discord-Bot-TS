@@ -2,7 +2,7 @@ import { BaseHandler, MessageHandler } from "./BaseHandler";
 import firebase from "firebase-admin";
 import ytdl from "ytdl-core";
 import { isUndefined, isNull } from "util";
-import { MessageUtil } from "../MessageUtil";
+import { Message } from "discord.js";
 
 const refName: string = "youtubeLinks";
 export class YouTubePasta extends BaseHandler implements MessageHandler {
@@ -32,7 +32,7 @@ export class YouTubePasta extends BaseHandler implements MessageHandler {
     this.youTubePastas = snapshot!.val();
   }
 
-  handleMessage(message: MessageUtil): void {
+  handleMessage(message: Message): void {
     if (!isUndefined(this.youTubePastas) && !isNull(this.youTubePastas)) {
       // Checks message against every trigger word in the database
       for (let triggerWord of Object.keys(this.youTubePastas)) {

@@ -3,7 +3,7 @@ import ytdl from "ytdl-core";
 import { BaseHandler, MessageHandler } from "./BaseHandler";
 import { Commands } from "./Commands";
 import { loginData } from "../app";
-import { MessageUtil } from "../MessageUtil";
+import { Message } from "discord.js";
 
 const AsciiTable = require("ascii-table"); //FIXME: Convert this into an import because it looks like garbage
 
@@ -20,7 +20,7 @@ export class YouTubeSearch extends BaseHandler implements MessageHandler {
     type: "video"
   };
 
-  handleMessage(message: MessageUtil): void {
+  handleMessage(message: Message): void {
     if (loginData && message.commandIs(Commands.YouTubeSearch)) {
       console.log(`Searching YouTube for ${message.toString(true)}`);
 
@@ -32,7 +32,7 @@ export class YouTubeSearch extends BaseHandler implements MessageHandler {
     this.handleVideoSelection(message);
   }
 
-  private handleYouTubeSearch(message: MessageUtil): void {
+  private handleYouTubeSearch(message: Message): void {
     const query = message.toString(true);
     yt.default(query, this.searchOptions, (err, result) => {
       let newResultMessage = new AsciiTable(
@@ -58,7 +58,7 @@ export class YouTubeSearch extends BaseHandler implements MessageHandler {
     });
   }
 
-  private handleVideoSelection(message: MessageUtil): void {
+  private handleVideoSelection(message: Message): void {
     if (this.storedResults) {
       let vidNumber = parseInt(message.toString()) - 1;
 

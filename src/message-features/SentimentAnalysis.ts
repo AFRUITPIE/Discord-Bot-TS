@@ -1,5 +1,5 @@
 import { BaseHandler, MessageHandler } from "./BaseHandler";
-import { MessageUtil } from "../MessageUtil";
+import { Message } from "discord.js";
 const language = require("@google-cloud/language");
 
 /**
@@ -12,7 +12,7 @@ enum Scores {
 }
 
 export class SentimentAnalysis extends BaseHandler implements MessageHandler {
-  handleMessage(message: MessageUtil): void {
+  handleMessage(message: Message): void {
     const client = new language.LanguageServiceClient();
     const document = { content: message.toString(), type: "PLAIN_TEXT" };
 

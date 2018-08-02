@@ -1,10 +1,12 @@
-import { ChannelUtil } from "../ChannelUtil";
-import { MessageUtil } from "../MessageUtil";
+import { ChannelUtil } from "../declarations/ChannelUtil";
+import { Message } from "discord.js";
+import "../declarations/MessageDeclaration";
+
 export abstract class BaseHandler implements MessageHandler {
   util: ChannelUtil = ChannelUtil.getInstance();
-  abstract handleMessage(message: MessageUtil): void;
+  abstract handleMessage(message: Message): void;
 }
 
 export interface MessageHandler {
-  handleMessage(message: MessageUtil): void;
+  handleMessage(message: Message): void;
 }
