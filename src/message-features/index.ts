@@ -3,10 +3,10 @@ import { CopyPasta } from "./CopyPasta";
 import { LockChannel } from "./LockChannel";
 import { PingPong } from "./PingPong";
 import { PlayLink } from "./PlayLink";
-import { SentimentAnalysis } from "./SentimentAnalysis";
 import { StopAudio } from "./StopAudio";
 import { YouTubePasta } from "./YouTubePasta";
 import { YouTubeSearch } from "./YouTubeSearch";
+import { Bify } from "./Bify";
 
 export = [
   BotSay,
@@ -16,5 +16,6 @@ export = [
   PlayLink,
   StopAudio,
   YouTubePasta,
-  YouTubeSearch
+  YouTubeSearch,
+  Bify
 ];
