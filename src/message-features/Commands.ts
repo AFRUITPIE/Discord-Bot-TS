@@ -3,5 +3,6 @@ export enum Commands {
   Play = "play",
   YouTubeSearch = "youtube",
   Stop = "stop",
-  LockChannel = "lock"
+  LockChannel = "lock",
+  Bify = "bify"
 }
