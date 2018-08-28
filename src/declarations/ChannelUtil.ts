@@ -14,7 +14,7 @@ export class ChannelUtil {
    * Maintains the singleton pattern of this instance
    * @return the singleton instance of this class
    */
-  static getInstance(message?: Message): ChannelUtil {
+  static getInstance(): ChannelUtil {
     // Create an instance if one does not already exist
     if (!this.instance) {
       this.instance = new ChannelUtil();

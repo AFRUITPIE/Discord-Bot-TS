@@ -54,11 +54,11 @@ client.on("message", (message: Message) => {
 
   // Handles initializing Util
   if (!util) {
-    ChannelUtil.getInstance(message);
-  } else {
-    if (!message.author.bot) {
-      util.setMessage(message);
-    }
+    util = ChannelUtil.getInstance();
+  }
+
+  if (!message.author.bot) {
+    util.setMessage(message);
   }
 
   // Go through all message handlers
