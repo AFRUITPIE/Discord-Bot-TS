@@ -36,9 +36,9 @@ export class YouTubeSearch extends BaseHandler implements MessageHandler {
     const query = message.toString(true);
     yt.default(query, this.searchOptions, (err, result) => {
       let newResultMessage = new AsciiTable(
-        `YouTube search results: ${query.substring(0, 10)}${query.length > 10 ? "..." : ""}`
+        `Search: ${query.substring(0, 10)}${query.length > 10 ? "..." : ""}`
       );
-      newResultMessage.setHeading("Index", "Video Title");
+      newResultMessage.setHeading("#", "Video Title");
 
       if (result) {
         // Overwrite results
@@ -46,7 +46,7 @@ export class YouTubeSearch extends BaseHandler implements MessageHandler {
 
         // Build a message to send
         result.forEach((video, index) => {
-          newResultMessage.addRow(index + 1, video.title.substring(0, 30));
+          newResultMessage.addRow(index + 1, video.title.substring(0, 40));
         });
 
         // Sending a weird way in order to handle weird whitespace issues with asciitable

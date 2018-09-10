@@ -11,6 +11,8 @@ export class BotSay extends BaseHandler implements MessageHandler {
       message.delete().then(() => {
         message.sendToChannel(messageText);
       });
+
+      console.log(`Botsaying: ${messageText}`);
     }
   }
 }
