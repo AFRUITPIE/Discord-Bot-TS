@@ -42,3 +42,29 @@ This will open the command line tools for logging in the bot. The steps for usin
 6.  Enter the token from the Google Cloud Console.
 
 After following the setup app once, it should log in correctly each time. If there are problems logging in, you can manually edit `login.json` or completely delete it nand restart the bot to re-run the setup process.
+
+## Adding/Removing bot featues
+
+### message-features
+
+This folder contains several files that contain message handlers and the interface for `MessageHandler`. Included in this folder is an abstract class `BaseHandler` which allows for easy extension.
+
+### index.ts
+
+`index.ts` contains all of the message features that the bot will try for each message. Simply remove features from `index.ts`' `export` to remove the feature from the bot.
+
+Alternatively, add a feature using the snippet included below to `index.ts` to add features to the bot.
+
+### Snippet
+
+I recommend adding this snippet to your TypeScript snippets in Visual Studio Code:
+
+```
+  "Handler": {
+    "prefix": "handler",
+    "body": "import { BaseHandler, MessageHandler } from \"./BaseHandler\";\nimport { Commands } from \"./Commands\";\nimport { Message } from \"discord.js\";\n\nexport class ${1:ClassName} extends BaseHandler implements MessageHandler { \n  handleMessage(message: Message): void {  \n    $0\n  }\n}",
+    "description": "Start a new MessageHandler class"
+  }
+```
+
+With this snippet, it will be very easy to start new message handlers by simply typing `handler` in a new .ts file.
