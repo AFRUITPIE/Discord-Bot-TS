@@ -11,16 +11,18 @@
   "license": "ISC",
   "dependencies": {
     "@google-cloud/language": "^1.2.0",
-    "@types/node": "^10.5.0",
+    "@types/node": "^10.10.3",
     "@types/readline-sync": "^1.4.3",
     "ascii-table": "0.0.9",
-    "discord.js": "^11.3.2",
-    "firebase-admin": "^5.12.1",
+    "discord.js": "^11.4.2",
+    "erlpack": "^0.1.2",
+    "firebase-admin": "^6.0.0",
     "node-opus": "^0.3.0",
     "readline-sync": "^1.4.9",
     "sodium": "^2.0.3",
-    "uws": "^10.148.1",
+    "uws": "^99.0.0",
     "youtube-search": "^1.1.1",
-    "ytdl-core": "^0.21.1"
+    "ytdl-core": "^0.25.2",
+    "zlib-sync": "^0.1.4"
   }
 }
