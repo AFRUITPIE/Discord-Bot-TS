@@ -80,7 +80,7 @@ export class ChannelUtil {
   /**
    * TODO: Implement this
    */
-  toggleUserLock() {}
+  toggleUserLock() { }
 
   /**
    * Stops playing audio in voice channels

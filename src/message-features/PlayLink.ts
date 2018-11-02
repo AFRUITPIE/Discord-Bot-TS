@@ -3,6 +3,9 @@ import { Commands } from "./Commands";
 import { Message } from "discord.js";
 import ytdl from "ytdl-core";
 
+/**
+ * Plays a link from a YouTube Video
+ */
 export class PlayLink extends BaseHandler implements MessageHandler {
   handleMessage(message: Message): void {
     if (message.commandIs(Commands.Play)) {

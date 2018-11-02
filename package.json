@@ -1,28 +1,28 @@
 {
-  "name": "discord-bot-js",
+  "name": "discord-bot-ts",
   "version": "0.0.1",
-  "description": "Discord bot written in Typescript ",
+  "description": "A Discord Bot written in TypeScript ",
   "main": "build/app.js",
   "scripts": {
-    "start": "tsc && node build/app.js",
-    "debug": "tsc && node --inspect build/app.js"
+    "start": "tsc && node build/app.js"
   },
-  "author": "Hayden Hong <afruitpie@gmail.com>",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AFRUITPIE/Discord-Bot-TS.git"
+  },
+  "author": "Hayden Hong",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AFRUITPIE/Discord-Bot-TS/issues"
+  },
+  "homepage": "https://github.com/AFRUITPIE/Discord-Bot-TS#readme",
   "dependencies": {
-    "@google-cloud/language": "^1.2.0",
-    "@types/node": "^10.10.3",
+    "@types/node": "^10.12.2",
     "@types/readline-sync": "^1.4.3",
-    "ascii-table": "0.0.9",
-    "discord.js": "^11.4.2",
-    "erlpack": "^0.1.2",
-    "firebase-admin": "^6.0.0",
-    "node-opus": "^0.3.0",
+    "firebase-admin": "^6.1.0",
+    "node-opus": "^0.3.1",
     "readline-sync": "^1.4.9",
-    "sodium": "^2.0.3",
-    "uws": "^99.0.0",
-    "youtube-search": "^1.1.1",
-    "ytdl-core": "^0.25.2",
-    "zlib-sync": "^0.1.4"
+    "youtube-search": "^1.1.3",
+    "ytdl-core": "^0.27.1"
   }
 }
