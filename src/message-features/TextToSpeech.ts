@@ -6,56 +6,101 @@ const tts = require("@google-cloud/text-to-speech");
 
 export class TextToSpeech extends BaseHandler implements MessageHandler {
   handleMessage(message: Message): void {
-    // Ensures folder exists
-    if (!fs.existsSync("./audio/")) {
-      fs.mkdirSync("./audio/");
+    // Locked to just Hayden for now
+    if (!(message.commandIs(Commands.Speak) && message.author.id == "115388431458107401")) {
+      return;
     }
 
-    // currently locked to just Hayden
-    if (
-      message.commandIs(Commands.Speak) &&
-      message.author.id == "115388431458107401"
-    ) {
-      let speech: String = message.toString(true);
-      let fileName: String = speech.replace(/\s/g, "").replace(/\W/g, "");
-      const speechClient = new tts.TextToSpeechClient();
+    let audioFileDictionary: AudioDirectory = this.getFileDictionary();
+    let speech: string = message.toString(true);
+    // Uses unix time to ensure no similar file names
+    let fileName: PathLike = `audio/${Date.now()}.mp3`;
 
-      let request = {
-        input: { text: speech },
-        voice: { languageCode: "en-US", ssmlGender: "FEMALE" },
-        audioConfig: { audioEncoding: "MP3" }
-      };
+    // Plays file locally if it already exists
+    if (audioFileDictionary[speech] == null) {
+      // Creates the speech file
+      new tts.TextToSpeechClient().synthesizeSpeech(this.getRequest(speech), (err: Error, response: any) => {
+        if (err) {
+          console.error("Speech Synthesis failed:", err);
+        } else {
+          this.writeAudioFile(fileName, response, () => {
+            this.addAudioFileToDictionary(speech, fileName, audioFileDictionary);
+            this.playFile(fileName);
+          });
+        }
+      });
+    } else {
+      this.playFile(audioFileDictionary[speech]);
+    }
+  }
 
-      // Plays file locally if it already exists
-      if (!fs.existsSync(`./audio/${fileName}.mp3`)) {
-        // Creates the speech file
-        speechClient.synthesizeSpeech(request, (err: Error, response: any) => {
-          if (err) {
-            console.error("Speech Synthesis failed:", err);
-          } else {
-            fs.writeFile(
-              `./audio/${fileName}.mp3`,
-              response.audioContent,
-              "binary",
-              err => {
-                if (err) {
-                  console.error(err);
-                } else {
-                  console.log(`Audio content written to file`);
-                  this.playFile(`./audio/${fileName}.mp3`);
-                }
-              }
-            );
-          }
-        });
+  /**
+   * Ensures existence of and returns the audio dictionary
+   */
+  getFileDictionary(): AudioDirectory {
+    // Ensures audio folder exists
+    if (!fs.existsSync("audio/")) {
+      fs.mkdirSync("audio/");
+    }
+
+    // Ensures audio index json exists
+    if (!fs.existsSync("audio/index.json")) {
+      fs.writeFileSync("audio/index.json", "{}");
+    }
+
+    return require("../../audio/index.json") as AudioDirectory;
+  }
+
+  /**
+   * Generates a Google Cloud TTS request
+   * @param speech what to have the TTS say
+   */
+  getRequest(speech: String) {
+    return {
+      input: { text: speech },
+      voice: { languageCode: "en-US", ssmlGender: "FEMALE" },
+      audioConfig: { audioEncoding: "MP3" }
+    };
+  }
+
+  /**
+   * Writes the audio file
+   * @param fileName relative path of file
+   * @param response audio response from Google Cloud TTS
+   * @param callback function to run after done writing, async
+   */
+  writeAudioFile(fileName: PathLike, response: any, callback: () => void) {
+    fs.writeFile(fileName, response.audioContent, "binary", err => {
+      if (err) {
+        console.error(err);
       } else {
-        this.playFile(`./audio/${fileName}.mp3`);
+        console.log(`Audio content written to file`);
+        callback();
       }
-    }
+    });
   }
 
-  playFile(fileName: PathLike) {
-    let stream = fs.createReadStream(fileName);
-    this.util.playStream(stream);
+  /**
+   *
+   * @param speech speech that the bot is saying
+   * @param audioFile relative file path
+   * @param audioFileDictionary dictionary to add file to
+   */
+  addAudioFileToDictionary(speech: string, audioFile: PathLike, audioFileDictionary: AudioDirectory) {
+    audioFileDictionary[speech] = audioFile;
+    fs.writeFileSync("audio/index.json", JSON.stringify(audioFileDictionary));
   }
+
+  /**
+   * Plays the file
+   * @param fileName path of the file
+   */
+  playFile(fileName: PathLike) {
+    this.util.playFile(fileName);
+  }
+}
+
+// Interface for the dictionary of audio files
+interface AudioDirectory {
+  [key: string]: PathLike;
 }

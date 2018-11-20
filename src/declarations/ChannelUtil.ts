@@ -1,11 +1,7 @@
-import {
-  Channel,
-  User,
-  StreamDispatcher,
-  VoiceChannel,
-  Message
-} from "discord.js";
+import { Channel, User, StreamDispatcher, VoiceChannel, Message } from "discord.js";
 import { Readable } from "stream";
+import { PathLike } from "fs";
+const path = require("path");
 
 export class ChannelUtil {
   private static instance: ChannelUtil;
@@ -50,9 +46,37 @@ export class ChannelUtil {
     if (this.message.member.voiceChannel && this.message.isInteractable()) {
       this.voiceChannel = this.message.member.voiceChannel;
       this.voiceChannel.join().then(connection => {
-        this.dispatcher = connection.playStream(stream);
-        // Disconnects from the voice channel on video end
-        this.dispatcher.on("end", end => {
+        this.dispatcher = connection.playStream(stream).on("end", end => {
+          if (this.voiceChannel) {
+            this.voiceChannel.leave();
+          }
+        });
+      });
+    }
+  }
+
+  /**
+   * Plays a file in the voice channel
+   * TODO: Fix duplicate code
+   * @param file relative file path
+   */
+  playFile(file: PathLike): void {
+    /**
+     * Play a stream in the voice channel of the current message's author
+     * @param stream Stream to be played within the voice channel
+     */
+    // Ensures dispatcher resets on new audio
+    if (this.dispatcher) {
+      this.dispatcher.end();
+    }
+
+    // Join if possible and leave when stream is over
+    if (this.message.member.voiceChannel && this.message.isInteractable()) {
+      const filePath = path.resolve(file);
+
+      this.voiceChannel = this.message.member.voiceChannel;
+      this.voiceChannel.join().then(connection => {
+        this.dispatcher = connection.playFile(filePath).on("end", end => {
           if (this.voiceChannel) {
             this.voiceChannel.leave();
           }
@@ -77,10 +101,7 @@ export class ChannelUtil {
     }
 
     // Notify users of the new channel lock status
-    this.message.sendToChannel(
-      `This channel has been ${channelIsLocked ? "`unlocked`" : "`locked`"}`,
-      true
-    );
+    this.message.sendToChannel(`This channel has been ${channelIsLocked ? "`unlocked`" : "`locked`"}`, true);
   }
 
   /**
