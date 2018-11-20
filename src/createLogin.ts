@@ -25,15 +25,14 @@ export class CreateLogin {
     if (readlineSync.keyInYNStrict("\nDo you want to add a Firebase database?: ")) {
       console.log("\nMake sure the Firebase service account is in the root directory of the bot.");
       login.firebaseToken = require("../" +
-        readlineSync.question(
-          "\nWhat is the name of the Firebase service account file? (Copy and paste it): "
-        ));
+        readlineSync.question("\nWhat is the name of the Firebase service account file? (Copy and paste it): "));
 
       login.firebaseDatabaseURL = readlineSync.question("\nWhat is the Firebase database URL?: ");
     }
 
-    if (readlineSync.keyInYNStrict("\nDo you want to add YouTube search integration?")) {
-      login.youtube = readlineSync.question("\nWhat is the YouTube login token?: ");
+    if (readlineSync.keyInYNStrict("\nDo you want to add YouTube search and Google TTS integration?")) {
+      login.youtube = readlineSync.question("\nWhat is the Google Cloud Console login token?: ");
+      console.log("Make sure to set your $GOOGLE_APPLICATION_CREDENTIALS as explained in the Google Cloud Console");
     }
 
     console.log("\nCreating your login file for easier future login...");

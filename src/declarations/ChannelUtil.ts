@@ -1,4 +1,4 @@
-import { Channel, User, StreamDispatcher, VoiceChannel, Message } from "discord.js";
+import { Channel, User, StreamDispatcher, VoiceChannel, VoiceConnection, Message } from "discord.js";
 import { Readable } from "stream";
 import { PathLike } from "fs";
 const path = require("path");
@@ -37,34 +37,35 @@ export class ChannelUtil {
    * @param stream Stream to be played within the voice channel
    */
   playStream(stream: Readable): void {
-    // Ensures dispatcher resets on new audio
-    if (this.dispatcher) {
-      this.dispatcher.end();
-    }
-
-    // Join if possible and leave when stream is over
-    if (this.message.member.voiceChannel && this.message.isInteractable()) {
-      this.voiceChannel = this.message.member.voiceChannel;
-      this.voiceChannel.join().then(connection => {
-        this.dispatcher = connection.playStream(stream).on("end", end => {
-          if (this.voiceChannel) {
-            this.voiceChannel.leave();
-          }
-        });
+    this.playArbitrary(connection => {
+      this.dispatcher = connection.playStream(stream).on("end", () => {
+        if (this.voiceChannel) {
+          this.voiceChannel.leave();
+        }
       });
-    }
+    });
   }
 
   /**
    * Plays a file in the voice channel
-   * TODO: Fix duplicate code
    * @param file relative file path
    */
   playFile(file: PathLike): void {
-    /**
-     * Play a stream in the voice channel of the current message's author
-     * @param stream Stream to be played within the voice channel
-     */
+    const filePath = path.resolve(file);
+    this.playArbitrary(connection => {
+      this.dispatcher = connection.playFile(filePath).on("end", () => {
+        if (this.voiceChannel) {
+          this.voiceChannel.leave();
+        }
+      });
+    });
+  }
+
+  /**
+   * Handles connecting and verifying voice channels to play arbitrary input
+   * @param completion what to run when complete (probably playing audio in the voice connection)
+   */
+  private playArbitrary(completion: (connection: VoiceConnection) => void) {
     // Ensures dispatcher resets on new audio
     if (this.dispatcher) {
       this.dispatcher.end();
@@ -72,15 +73,9 @@ export class ChannelUtil {
 
     // Join if possible and leave when stream is over
     if (this.message.member.voiceChannel && this.message.isInteractable()) {
-      const filePath = path.resolve(file);
-
       this.voiceChannel = this.message.member.voiceChannel;
       this.voiceChannel.join().then(connection => {
-        this.dispatcher = connection.playFile(filePath).on("end", end => {
-          if (this.voiceChannel) {
-            this.voiceChannel.leave();
-          }
-        });
+        completion(connection);
       });
     }
   }

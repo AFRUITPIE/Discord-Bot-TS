@@ -6,11 +6,12 @@ const tts = require("@google-cloud/text-to-speech");
 
 export class TextToSpeech extends BaseHandler implements MessageHandler {
   handleMessage(message: Message): void {
-    // Locked to just Hayden for now
+    // Don't do any of this if command isn't there
     if (!message.commandIs(Commands.Speak)) {
       return;
     }
 
+    // Dictionary of audio files so tha re-processing identical text is not done
     let audioFileDictionary: AudioDirectory = this.getFileDictionary();
     let speech: string = message.toString(true);
     // Uses unix time to ensure no similar file names
@@ -18,7 +19,7 @@ export class TextToSpeech extends BaseHandler implements MessageHandler {
 
     // Plays file locally if it already exists
     if (audioFileDictionary[speech] == null) {
-      // Creates the speech file
+      // Creates the speech fil`e
       new tts.TextToSpeechClient().synthesizeSpeech(this.getRequest(speech), (err: Error, response: any) => {
         if (err) {
           console.error("Speech Synthesis failed:", err);
@@ -58,7 +59,7 @@ export class TextToSpeech extends BaseHandler implements MessageHandler {
   getRequest(speech: String) {
     return {
       input: { text: speech },
-      voice: { languageCode: "en-US", ssmlGender: "FEMALE" },
+      voice: { languageCode: "en-US", name: "en-US-Wavenet-F", ssmlGender: "FEMALE" },
       audioConfig: { audioEncoding: "MP3" }
     };
   }
