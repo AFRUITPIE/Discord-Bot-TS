@@ -7,7 +7,7 @@ const tts = require("@google-cloud/text-to-speech");
 export class TextToSpeech extends BaseHandler implements MessageHandler {
   handleMessage(message: Message): void {
     // Locked to just Hayden for now
-    if (!(message.commandIs(Commands.Speak) && message.author.id == "115388431458107401")) {
+    if (!message.commandIs(Commands.Speak)) {
       return;
     }
 
