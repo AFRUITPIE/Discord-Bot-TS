@@ -38,7 +38,7 @@ This will open the command line tools for logging in the bot. The steps for usin
 2.  Enter `y` if you want to add a Firebase app for copypasta and YouTube pastas. Enter `n` if you don't want these features and skip to step 5.
 3.  Enter the name of the service account json you downloaded and added to the root directory of the bot. I recommend using the name `firebase.json` for ease of use.
 4.  Enter the URL of the Firebase database.
-5.  Enter `y` if you want to add a YouTube search API token in order to use YouTube search. Enter `n` otherwise, and you're done! The bot should be running.
+5.  Enter `y` if you want to add a Google Cloud Console API token in order to use YouTube search and Google Cloud TTS. Enter `n` otherwise, and you're done! The bot should be running.
 6.  Enter the token from the Google Cloud Console.
 
 After following the setup app once, it should log in correctly each time. If there are problems logging in, you can manually edit `login.json` or completely delete it nand restart the bot to re-run the setup process.

@@ -1,5 +1,7 @@
-import { Channel, User, StreamDispatcher, VoiceChannel, Message } from "discord.js";
+import { Channel, User, StreamDispatcher, VoiceChannel, VoiceConnection, Message } from "discord.js";
 import { Readable } from "stream";
+import { PathLike } from "fs";
+const path = require("path");
 
 export class ChannelUtil {
   private static instance: ChannelUtil;
@@ -35,6 +37,35 @@ export class ChannelUtil {
    * @param stream Stream to be played within the voice channel
    */
   playStream(stream: Readable): void {
+    this.playArbitrary(connection => {
+      this.dispatcher = connection.playStream(stream).on("end", () => {
+        if (this.voiceChannel) {
+          this.voiceChannel.leave();
+        }
+      });
+    });
+  }
+
+  /**
+   * Plays a file in the voice channel
+   * @param file relative file path
+   */
+  playFile(file: PathLike): void {
+    const filePath = path.resolve(file);
+    this.playArbitrary(connection => {
+      this.dispatcher = connection.playFile(filePath).on("end", () => {
+        if (this.voiceChannel) {
+          this.voiceChannel.leave();
+        }
+      });
+    });
+  }
+
+  /**
+   * Handles connecting and verifying voice channels to play arbitrary input
+   * @param completion what to run when complete (probably playing audio in the voice connection)
+   */
+  private playArbitrary(completion: (connection: VoiceConnection) => void) {
     // Ensures dispatcher resets on new audio
     if (this.dispatcher) {
       this.dispatcher.end();
@@ -44,13 +75,7 @@ export class ChannelUtil {
     if (this.message.member.voiceChannel && this.message.isInteractable()) {
       this.voiceChannel = this.message.member.voiceChannel;
       this.voiceChannel.join().then(connection => {
-        this.dispatcher = connection.playStream(stream);
-        // Disconnects from the voice channel on video end
-        this.dispatcher.on("end", end => {
-          if (this.voiceChannel) {
-            this.voiceChannel.leave();
-          }
-        });
+        completion(connection);
       });
     }
   }
@@ -71,10 +96,7 @@ export class ChannelUtil {
     }
 
     // Notify users of the new channel lock status
-    this.message.sendToChannel(
-      `This channel has been ${channelIsLocked ? "`unlocked`" : "`locked`"}`,
-      true
-    );
+    this.message.sendToChannel(`This channel has been ${channelIsLocked ? "`unlocked`" : "`locked`"}`, true);
   }
 
   /**

@@ -7,8 +7,9 @@ import { StopAudio } from "./StopAudio";
 import { YouTubePasta } from "./YouTubePasta";
 import { YouTubeSearch } from "./YouTubeSearch";
 import { Bify } from "./Bify";
+import { TextToSpeech } from "./TextToSpeech";
 
-export = [
+export =[
   BotSay,
   CopyPasta,
   LockChannel,
@@ -17,5 +18,6 @@ export = [
   StopAudio,
   YouTubePasta,
   YouTubeSearch,
-  Bify
+  Bify,
+  TextToSpeech
 ];
