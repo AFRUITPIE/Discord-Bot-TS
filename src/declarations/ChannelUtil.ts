@@ -1,4 +1,10 @@
-import { Channel, User, StreamDispatcher, VoiceChannel, Message } from "discord.js";
+import {
+  Channel,
+  User,
+  StreamDispatcher,
+  VoiceChannel,
+  Message
+} from "discord.js";
 import { Readable } from "stream";
 
 export class ChannelUtil {
@@ -80,7 +86,7 @@ export class ChannelUtil {
   /**
    * TODO: Implement this
    */
-  toggleUserLock() { }
+  toggleUserLock() {}
 
   /**
    * Stops playing audio in voice channels
