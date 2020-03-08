@@ -38,7 +38,7 @@ export class ChannelUtil {
    */
   playStream(stream: Readable): void {
     this.playArbitrary(connection => {
-      this.dispatcher = connection.playStream(stream).on("end", () => {
+      this.dispatcher = connection.play(stream).on("end", () => {
         if (this.voiceChannel) {
           this.voiceChannel.leave();
         }
@@ -53,7 +53,7 @@ export class ChannelUtil {
   playFile(file: PathLike): void {
     const filePath = path.resolve(file);
     this.playArbitrary(connection => {
-      this.dispatcher = connection.playFile(filePath).on("end", () => {
+      this.dispatcher = connection.play(filePath).on("end", () => {
         if (this.voiceChannel) {
           this.voiceChannel.leave();
         }
@@ -72,8 +72,8 @@ export class ChannelUtil {
     }
 
     // Join if possible and leave when stream is over
-    if (this.message.member.voiceChannel && this.message.isInteractable()) {
-      this.voiceChannel = this.message.member.voiceChannel;
+    if (this.message.member?.voice.channel && this.message.isInteractable()) {
+      this.voiceChannel = this.message.member.voice.channel;
       this.voiceChannel.join().then(connection => {
         completion(connection);
       });

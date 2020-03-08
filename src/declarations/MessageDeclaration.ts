@@ -28,10 +28,9 @@ Message.prototype.isInteractable = function(): boolean {
 };
 
 Message.prototype.isAdmin = function(): boolean {
-  let adminRole = this.guild.roles.find("name", "Admin");
-
+  let adminRole = this.guild?.roles.cache.find(c => c.name == "Admin")
   // Escapes this in case there is no admin role at all
-  if (adminRole === null) {
+  if (adminRole == null || adminRole == undefined) {
     console.log(
       `Please set a role in the server named "Admin", some bot functionality won't work without it`
     );
@@ -43,7 +42,7 @@ Message.prototype.isAdmin = function(): boolean {
   }
 
   // Finally returns whether the user is an admin
-  return this.member.roles.has(adminRole.id);
+  return this.member?.roles.cache.find(c => c.id == adminRole?.id) != undefined
 };
 
 Message.prototype.sendToChannel = function(text: string, ignoreLock?: boolean): void {

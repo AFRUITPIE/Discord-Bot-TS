@@ -70,5 +70,5 @@ client.on("message", (message: Message) => {
 });
 
 client.login(loginData.token).then(() => {
-  console.log(`Successfully logged into Discord as ${client.user.username}`);
+  console.log(`Successfully logged into Discord as ${client.user?.username}`);
 });
