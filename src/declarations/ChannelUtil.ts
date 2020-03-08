@@ -38,13 +38,15 @@ export class ChannelUtil {
    */
   playStream(stream: Readable): void {
     this.playArbitrary(connection => {
-      this.dispatcher = connection.play(stream).on("end", () => {
-        if (this.voiceChannel) {
-          this.voiceChannel.leave();
+      this.dispatcher?.resume()
+      this.dispatcher = connection.play(stream).on("speaking", (speaking) => {
+        if (!speaking) {
+          this.stopAudio()
         }
       });
     });
   }
+
 
   /**
    * Plays a file in the voice channel
@@ -53,9 +55,9 @@ export class ChannelUtil {
   playFile(file: PathLike): void {
     const filePath = path.resolve(file);
     this.playArbitrary(connection => {
-      this.dispatcher = connection.play(filePath).on("end", () => {
-        if (this.voiceChannel) {
-          this.voiceChannel.leave();
+      this.dispatcher = connection.play(filePath).on("speaking", (speaking) => {
+        if (!speaking) {
+          this.stopAudio()
         }
       });
     });
@@ -66,17 +68,16 @@ export class ChannelUtil {
    * @param completion what to run when complete (probably playing audio in the voice connection)
    */
   private playArbitrary(completion: (connection: VoiceConnection) => void) {
-    // Ensures dispatcher resets on new audio
-    if (this.dispatcher) {
-      this.dispatcher.end();
-    }
-
+    this.stopAudio()
     // Join if possible and leave when stream is over
     if (this.message.member?.voice.channel && this.message.isInteractable()) {
       this.voiceChannel = this.message.member.voice.channel;
       this.voiceChannel.join().then(connection => {
         completion(connection);
-      });
+      }).catch(reason => {
+        console.error(reason)
+        this.stopAudio()
+      })
     }
   }
 
@@ -108,9 +109,13 @@ export class ChannelUtil {
    * Stops playing audio in voice channels
    */
   stopAudio(): void {
-    if (this.dispatcher && this.voiceChannel) {
+    if (this.dispatcher) {
       this.dispatcher.end();
+      this.dispatcher = undefined
+    }
+    if (this.voiceChannel) {
       this.voiceChannel.leave();
+      this.voiceChannel = undefined
     }
   }
 }
